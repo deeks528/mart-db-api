@@ -2,3 +2,4 @@ fastapi
 uvicorn[standard]
 pillow
 jinja2
+python-dotenv

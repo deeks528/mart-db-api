@@ -229,6 +229,21 @@
             color: var(--muted);
         }
 
+        .inv-link {
+            font-size: 0.72rem;
+            color: var(--muted);
+            text-decoration: none;
+            border: 1px solid var(--border);
+            padding: 4px 12px;
+            border-radius: 8px;
+            transition: all 0.18s;
+        }
+
+        .inv-link:hover {
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+
         /* ── Divider ── */
         .section-title {
             max-width: 960px;
@@ -395,7 +410,10 @@
 
     <header>
         <h1>🏷 Product Lookup</h1>
-        <span>GET / · GET /barcode</span>
+        <div style="display:flex;align-items:center;gap:10px;">
+            <span>GET / · GET /barcode</span>
+            <a href="/invoices/ui" class="inv-link">🧾 Invoices</a>
+        </div>
     </header>
 
     <!-- ── Product info ── -->

@@ -1,6 +1,8 @@
 import io
 import random
 import csv
+from dotenv import load_dotenv
+load_dotenv()   # load .env into os.environ before anything else reads it
 from pathlib import Path
 from typing import Optional
 from contextlib import asynccontextmanager
@@ -121,6 +123,10 @@ async def lifespan(app: FastAPI):
 
 # ── App ───────────────────────────────────────────────────────────────────────
 app = FastAPI(title="Product Lookup API", version="1.0.0", lifespan=lifespan)
+
+# ── Invoice routes (separated into invoice.py) ───────────────────────────────
+import invoice
+app.include_router(invoice.router)
 templates = Jinja2Templates(directory="templates")
 
 

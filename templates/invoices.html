@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Invoice Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #0d0d0f;
+            --panel: #141417;
+            --panel2: #1a1a1f;
+            --border: #2a2a30;
+            --accent: #f5c842;
+            --accent2: #ff6b35;
+            --green: #4ade80;
+            --red: #f87171;
+            --blue: #60a5fa;
+            --purple: #a78bfa;
+            --text: #e8e8ec;
+            --muted: #6b6b78;
+            --radius: 12px;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'DM Mono', monospace;
+            min-height: 100vh;
+            padding: 40px 20px 60px;
+        }
+
+        /* ── Header ── */
+        header {
+            max-width: 1100px;
+            margin: 0 auto 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 20px;
+        }
+
+        header h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--accent);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 12px;
+        }
+
+        .nav-link {
+            font-size: 0.75rem;
+            color: var(--muted);
+            text-decoration: none;
+            border: 1px solid var(--border);
+            padding: 5px 12px;
+            border-radius: 8px;
+            transition: all 0.18s;
+        }
+
+        .nav-link:hover {
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .nav-link.active {
+            color: var(--accent);
+            border-color: var(--accent);
+            background: rgba(245, 200, 66, .07);
+        }
+
+        /* ── Stat cards row ── */
+        .stat-grid {
+            max-width: 1100px;
+            margin: 0 auto 36px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+        }
+
+        .stat-card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 18px 20px;
+            animation: fadeUp 0.35s ease both;
+        }
+
+        .stat-card:nth-child(1) {
+            animation-delay: 0.00s;
+        }
+
+        .stat-card:nth-child(2) {
+            animation-delay: 0.06s;
+        }
+
+        .stat-card:nth-child(3) {
+            animation-delay: 0.12s;
+        }
+
+        .stat-card:nth-child(4) {
+            animation-delay: 0.18s;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .stat-label {
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: var(--muted);
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.9rem;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .stat-sub {
+            font-size: 0.7rem;
+            color: var(--muted);
+            margin-top: 5px;
+        }
+
+        .c-green {
+            color: var(--green);
+        }
+
+        .c-yellow {
+            color: var(--accent);
+        }
+
+        .c-orange {
+            color: var(--accent2);
+        }
+
+        .c-blue {
+            color: var(--blue);
+        }
+
+        /* ── Memory bar ── */
+        .memory-wrap {
+            max-width: 1100px;
+            margin: 0 auto 36px;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 18px 22px;
+            animation: fadeUp 0.35s 0.22s ease both;
+        }
+
+        .memory-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .memory-title {
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: var(--muted);
+        }
+
+        .memory-nums {
+            font-size: 0.78rem;
+            color: var(--text);
+        }
+
+        .memory-nums span {
+            color: var(--muted);
+        }
+
+        .bar-track {
+            height: 8px;
+            background: var(--panel2);
+            border-radius: 99px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        .bar-fill {
+            height: 100%;
+            border-radius: 99px;
+            transition: width 0.6s ease;
+            background: var(--green);
+        }
+
+        .bar-fill.warn {
+            background: var(--accent);
+        }
+
+        .bar-fill.crit {
+            background: var(--red);
+        }
+
+        .memory-footer {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            font-size: 0.68rem;
+            color: var(--muted);
+        }
+
+        /* ── Two-column layout ── */
+        .two-col {
+            max-width: 1100px;
+            margin: 0 auto 36px;
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 20px;
+        }
+
+        /* ── Section heading ── */
+        .section-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+
+        .section-head h2 {
+            font-family: 'Syne', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+        }
+
+        .count-badge {
+            font-size: 0.68rem;
+            background: var(--panel2);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 3px 10px;
+            color: var(--muted);
+        }
+
+        /* ── Invoice table ── */
+        .table-wrap {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.78rem;
+        }
+
+        thead th {
+            padding: 10px 14px;
+            text-align: left;
+            color: var(--muted);
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            border-bottom: 1px solid var(--border);
+            font-weight: 400;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid var(--border);
+            transition: background 0.15s;
+            cursor: pointer;
+        }
+
+        tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        tbody tr:hover {
+            background: var(--panel2);
+        }
+
+        tbody td {
+            padding: 10px 14px;
+            vertical-align: middle;
+        }
+
+        .inv-id {
+            font-family: 'DM Mono', monospace;
+            color: var(--accent);
+            font-size: 0.75rem;
+        }
+
+        .inv-branch {
+            display: inline-block;
+            font-size: 0.65rem;
+            background: rgba(255, 107, 53, 0.1);
+            border: 1px solid rgba(255, 107, 53, 0.25);
+            color: var(--accent2);
+            border-radius: 20px;
+            padding: 2px 8px;
+        }
+
+        .inv-branch.empty {
+            color: var(--muted);
+            background: none;
+            border-color: var(--border);
+        }
+
+        .inv-total {
+            color: var(--green);
+            font-weight: 500;
+        }
+
+        .inv-date {
+            color: var(--muted);
+            font-size: 0.7rem;
+        }
+
+        .empty-state {
+            padding: 48px;
+            text-align: center;
+            color: var(--muted);
+            font-size: 0.82rem;
+        }
+
+        .empty-state p:first-child {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        /* ── Branch breakdown ── */
+        .branch-panel {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+
+        .branch-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 11px 16px;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.78rem;
+            gap: 10px;
+        }
+
+        .branch-row:last-child {
+            border-bottom: none;
+        }
+
+        .branch-name {
+            color: var(--text);
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .branch-cnt {
+            color: var(--muted);
+            font-size: 0.68rem;
+            white-space: nowrap;
+        }
+
+        .branch-amt {
+            color: var(--green);
+            white-space: nowrap;
+        }
+
+        /* ── Expandable row detail ── */
+        .detail-row {
+            display: none;
+            background: var(--panel2);
+        }
+
+        .detail-row.open {
+            display: table-row;
+        }
+
+        .detail-inner {
+            padding: 12px 14px;
+        }
+
+        .items-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 6px;
+        }
+
+        .item-chip {
+            font-size: 0.68rem;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 4px 10px;
+            color: var(--text);
+        }
+
+        .item-chip span {
+            color: var(--muted);
+        }
+
+        /* ── Auto-refresh toggle ── */
+        .toolbar {
+            max-width: 1100px;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.75rem;
+            color: var(--muted);
+        }
+
+        .refresh-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 14px;
+            border-radius: 8px;
+            font-family: 'DM Mono', monospace;
+            font-size: 0.75rem;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text);
+            transition: all 0.18s;
+        }
+
+        .refresh-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .toggle-wrap {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .toggle {
+            width: 34px;
+            height: 18px;
+            background: var(--border);
+            border-radius: 99px;
+            position: relative;
+            transition: background 0.2s;
+        }
+
+        .toggle.on {
+            background: var(--accent);
+        }
+
+        .toggle::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 12px;
+            height: 12px;
+            background: #fff;
+            border-radius: 50%;
+            transition: transform 0.2s;
+        }
+
+        .toggle.on::after {
+            transform: translateX(16px);
+        }
+
+        #last-refresh {
+            font-size: 0.68rem;
+            color: var(--muted);
+            margin-left: auto;
+        }
+
+        @media (max-width: 800px) {
+            .stat-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .two-col {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stat-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>🧾 Invoice Dashboard</h1>
+        <nav class="nav-links">
+            <a class="nav-link" href="/">← Home</a>
+            <a class="nav-link" href="/invoices">JSON</a>
+            <a class="nav-link" href="/invoices/stats">Stats API</a>
+            <a class="nav-link active" href="/invoices/ui">Dashboard</a>
+        </nav>
+    </header>
+
+    <!-- ── Stat cards ── -->
+    <div class="stat-grid">
+        <div class="stat-card">
+            <div class="stat-label">Total Invoices</div>
+            <div class="stat-value c-yellow">{{ stats.count }}</div>
+            <div class="stat-sub">in memory</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Total Revenue</div>
+            <div class="stat-value c-green">₹{{ "{:,.0f}".format(stats.revenue) }}</div>
+            <div class="stat-sub">across all invoices</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Items Sold</div>
+            <div class="stat-value c-blue">{{ stats.qty }}</div>
+            <div class="stat-sub">total quantity</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Avg. Order Value</div>
+            <div class="stat-value c-orange">
+                {% if stats.count > 0 %}₹{{ "{:,.0f}".format(stats.revenue / stats.count) }}{% else %}—{% endif %}
+            </div>
+            <div class="stat-sub">per invoice</div>
+        </div>
+    </div>
+
+    <!-- ── Memory bar ── -->
+    <div class="memory-wrap">
+        <div class="memory-header">
+            <span class="memory-title">💾 Invoice Store Memory</span>
+            <span class="memory-nums">
+                {{ stats.size_kb }} KB <span>/ {{ stats.limit_kb }} KB</span>
+            </span>
+        </div>
+        <div class="bar-track">
+            <div class="bar-fill {% if stats.used_pct >= 90 %}crit{% elif stats.used_pct >= 70 %}warn{% endif %}"
+                style="width: {{ [stats.used_pct, 100] | min }}%"></div>
+        </div>
+        <div class="memory-footer">
+            <span>{{ stats.used_pct }}% used</span>
+            <span>Oldest invoices auto-evicted when full</span>
+        </div>
+    </div>
+
+    <!-- ── Toolbar ── -->
+    <div class="toolbar">
+        <button class="refresh-btn" onclick="location.reload()">⟳ Refresh</button>
+        <label class="toggle-wrap" onclick="toggleAuto()">
+            <div class="toggle" id="auto-toggle"></div>
+            <span>Auto-refresh every 10s</span>
+        </label>
+        <span id="last-refresh">Last loaded: {{ now }}</span>
+    </div>
+
+    <!-- ── Main content ── -->
+    <div class="two-col">
+
+        <!-- Invoice list -->
+        <div>
+            <div class="section-head">
+                <h2>Invoices</h2>
+                <span class="count-badge">{{ invoices | length }} shown</span>
+            </div>
+            <div class="table-wrap">
+                {% if invoices %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Invoice ID</th>
+                            <th>Branch</th>
+                            <th>Items</th>
+                            <th>Qty</th>
+                            <th>Total</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for inv in invoices %}
+                        <tr onclick="toggleDetail('{{ loop.index }}')">
+                            <td><span class="inv-id">{{ inv.invoice_id }}</span></td>
+                            <td>
+                                {% if inv.branch %}
+                                <span class="inv-branch">{{ inv.branch }}</span>
+                                {% else %}
+                                <span class="inv-branch empty">—</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ inv.items | length }}</td>
+                            <td>{{ inv.total_quantity }}</td>
+                            <td class="inv-total">₹{{ "{:,.2f}".format(inv.total) }}</td>
+                            <td class="inv-date">
+                                {% set d = inv.date | string %}{{ d[:16] if d|length > 10 else d }}
+                            </td>
+                        </tr>
+                        <tr class="detail-row" id="detail-{{ loop.index }}">
+                            <td colspan="6">
+                                <div class="detail-inner">
+                                    <div
+                                        style="font-size:0.68rem;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;">
+                                        Line items · received {{ inv.received_at | string | truncate(19, True, '') }}
+                                    </div>
+                                    <div class="items-list">
+                                        {% for item in inv.items %}
+                                        <div class="item-chip">
+                                            {{ item.title }}
+                                            <span>× {{ item.quantity }} · ₹{{ "{:,.2f}".format(item.unit_price)
+                                                }}</span>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <div class="empty-state">
+                    <p>🧾</p>
+                    <p>No invoices yet.</p>
+                    <p style="margin-top:6px">POST to <code style="color:var(--accent2)">/invoice</code> from your app
+                        to see them here.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Branch breakdown -->
+        <div>
+            <div class="section-head">
+                <h2>By Branch</h2>
+                <span class="count-badge">{{ branch_totals | length }}</span>
+            </div>
+            <div class="branch-panel">
+                {% if branch_totals %}
+                {% for branch, info in branch_totals %}
+                <div class="branch-row">
+                    <span class="branch-name">{{ branch }}</span>
+                    <span class="branch-cnt">{{ info.count }} inv</span>
+                    <span class="branch-amt">₹{{ "{:,.0f}".format(info.total) }}</span>
+                </div>
+                {% endfor %}
+                {% else %}
+                <div style="padding:32px;text-align:center;color:var(--muted);font-size:0.78rem;">No data yet</div>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // ── Expandable row ────────────────────────────────────────────────────────
+        function toggleDetail(idx) {
+            const row = document.getElementById('detail-' + idx);
+            row.classList.toggle('open');
+        }
+
+        // ── Auto-refresh ──────────────────────────────────────────────────────────
+        let autoTimer = null;
+        function toggleAuto() {
+            const el = document.getElementById('auto-toggle');
+            if (autoTimer) {
+                clearInterval(autoTimer);
+                autoTimer = null;
+                el.classList.remove('on');
+            } else {
+                el.classList.add('on');
+                autoTimer = setInterval(() => location.reload(), 10000);
+            }
+        }
+    </script>
+</body>
+
+</html>
