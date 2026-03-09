@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Barcode Variations · {{ barcode }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #0d0d0f;
+            --panel: #141417;
+            --border: #2a2a30;
+            --accent: #f5c842;
+            --accent2: #ff6b35;
+            --green: #4ade80;
+            --red: #f87171;
+            --text: #e8e8ec;
+            --muted: #6b6b78;
+            --radius: 12px;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'DM Mono', monospace;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        /* ── Header ── */
+        header {
+            max-width: 960px;
+            margin: 0 auto 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 20px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        header h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--accent);
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.8rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 6px 12px;
+            transition: all 0.18s;
+        }
+
+        .back-btn:hover {
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        /* ── Alert banner ── */
+        .alert {
+            max-width: 960px;
+            margin: 0 auto 28px;
+            padding: 12px 18px;
+            border-radius: var(--radius);
+            font-size: 0.82rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert-warn {
+            background: rgba(251, 191, 36, 0.1);
+            border: 1px solid rgba(251, 191, 36, 0.3);
+            color: #fbbf24;
+        }
+
+        /* ── Intro ── */
+        .intro {
+            max-width: 960px;
+            margin: 0 auto 36px;
+        }
+
+        .intro h2 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .intro p {
+            color: var(--muted);
+            font-size: 0.82rem;
+            line-height: 1.6;
+        }
+
+        .intro code {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 1px 6px;
+            color: var(--accent2);
+        }
+
+        /* ── Search bar ── */
+        .search-wrap {
+            max-width: 960px;
+            margin: 0 auto 40px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .search-wrap input {
+            flex: 1;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 16px;
+            color: var(--text);
+            font-family: 'DM Mono', monospace;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .search-wrap input:focus {
+            border-color: var(--accent);
+        }
+
+        .search-wrap input::placeholder {
+            color: var(--muted);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-family: 'DM Mono', monospace;
+            font-size: 0.82rem;
+            cursor: pointer;
+            border: none;
+            transition: all 0.18s;
+            font-weight: 500;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #000;
+        }
+
+        .btn-primary:hover {
+            background: #ffd65c;
+            transform: translateY(-1px);
+        }
+
+        /* ── Grid ── */
+        .grid {
+            max-width: 960px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        /* ── Variation card ── */
+        .var-card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            animation: fadeUp 0.4s ease both;
+            cursor: pointer;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .var-card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 1px var(--accent);
+        }
+
+        .var-card.selected {
+            border-color: var(--green);
+            box-shadow: 0 0 0 1px var(--green);
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(14px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+            {
+            % for v in variations %
+        }
+
+        .var-card:nth-child({
+                {
+                loop.index
+            }
+
+        }) {
+            animation-delay: {
+                    {
+                    (loop.index - 1) * 0.06
+                }
+            }
+
+            s;
+        }
+
+            {
+            % endfor %
+        }
+
+        .card-img {
+            background: #fff;
+            padding: 20px 16px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 110px;
+        }
+
+        .card-img img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .card-body {
+            padding: 14px 16px 16px;
+        }
+
+        .card-label {
+            font-family: 'Syne', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+
+        .card-hint {
+            font-size: 0.72rem;
+            color: var(--muted);
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+
+        .card-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .module-pill {
+            font-size: 0.7rem;
+            background: rgba(245, 200, 66, 0.1);
+            border: 1px solid rgba(245, 200, 66, 0.25);
+            color: var(--accent);
+            border-radius: 20px;
+            padding: 3px 10px;
+        }
+
+        .dl-link {
+            font-size: 0.72rem;
+            color: var(--muted);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 4px 10px;
+            transition: all 0.15s;
+        }
+
+        .dl-link:hover {
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        /* ── Scan feedback ── */
+        .scan-feedback {
+            max-width: 960px;
+            margin: 28px auto 0;
+            padding: 16px 20px;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 0.82rem;
+            color: var(--muted);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .scan-feedback strong {
+            color: var(--text);
+        }
+
+        #scan-result {
+            color: var(--green);
+            font-weight: 700;
+        }
+
+        /* ── Endpoint hint ── */
+        .endpoint {
+            max-width: 960px;
+            margin: 20px auto 0;
+            font-size: 0.72rem;
+            color: var(--muted);
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 8px 14px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .method {
+            color: var(--accent2);
+        }
+
+        @media (max-width: 600px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="header-left">
+            <h1>🔬 Barcode Variations</h1>
+        </div>
+        <a class="back-btn" href="/">← Home</a>
+    </header>
+
+    {% if was_corrected %}
+    <div class="alert alert-warn">
+        ⚠ Check digit corrected: <strong>{{ original }}</strong> → <strong>{{ barcode }}</strong>
+        &nbsp;(last digit was invalid per EAN-13 spec)
+    </div>
+    {% endif %}
+
+    <div class="intro">
+        <h2>{{ barcode }}</h2>
+        <p>
+            Six size variants of the same barcode — try scanning each with your camera.
+            If one fails, try the next larger size. The <code>module</code> value is the
+            pixel width of a single bar unit; bigger = easier for cameras to resolve.
+        </p>
+    </div>
+
+    <!-- Re-query another barcode -->
+    <div class="search-wrap">
+        <input id="bc-input" type="text" placeholder="Try another barcode…" value="{{ barcode }}">
+        <button class="btn btn-primary" onclick="requery()">Generate</button>
+    </div>
+
+    <div class="grid">
+        {% for v in variations %}
+        <div class="var-card" id="card-{{ v.module }}" onclick="selectCard({{ v.module }})">
+            <div class="card-img">
+                <img src="/barcode-image?barcode={{ barcode }}&module={{ v.module }}" alt="module={{ v.module }}"
+                    loading="lazy">
+            </div>
+            <div class="card-body">
+                <div class="card-label">{{ v.label }}</div>
+                <div class="card-hint">{{ v.hint }}</div>
+                <div class="card-meta">
+                    <span class="module-pill">module={{ v.module }}px</span>
+                    <a class="dl-link" href="/barcode-image?barcode={{ barcode }}&module={{ v.module }}"
+                        download="barcode_{{ barcode }}_m{{ v.module }}.png" onclick="event.stopPropagation()">↓ PNG</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="scan-feedback">
+        <span>📷 Point your camera at a barcode above →</span>
+        <span>Scanned: <span id="scan-result">—</span></span>
+    </div>
+
+    <div class="endpoint">
+        <span class="method">GET</span>
+        <span>/barcode-image?barcode=<strong>{{ barcode }}</strong>&amp;module=<em>{2–12}</em></span>
+        <span style="margin-left:auto; color: var(--muted)">· add <code>module=</code> param to control size</span>
+    </div>
+
+    <script>
+        function requery() {
+            const v = document.getElementById('bc-input').value.trim();
+            if (v) window.location.href = '/barcode-variations?barcode=' + encodeURIComponent(v);
+        }
+        document.getElementById('bc-input').addEventListener('keydown', e => {
+            if (e.key === 'Enter') requery();
+        });
+
+        function selectCard(module) {
+            document.querySelectorAll('.var-card').forEach(c => c.classList.remove('selected'));
+            document.getElementById('card-' + module).classList.add('selected');
+        }
+    </script>
+</body>
+
+</html>

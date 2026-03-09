@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Product Lookup</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #0d0d0f;
+            --panel: #141417;
+            --border: #2a2a30;
+            --accent: #f5c842;
+            --accent2: #ff6b35;
+            --green: #4ade80;
+            --text: #e8e8ec;
+            --muted: #6b6b78;
+            --radius: 12px;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'DM Mono', monospace;
+            min-height: 100vh;
+            padding: 40px 20px 60px;
+        }
+
+        /* ── Header ── */
+        header {
+            max-width: 960px;
+            margin: 0 auto 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 20px;
+        }
+
+        header h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--accent);
+        }
+
+        header span {
+            font-size: 0.72rem;
+            color: var(--muted);
+            background: var(--panel);
+            border: 1px solid var(--border);
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+
+        /* ── Product card ── */
+        .product-card {
+            max-width: 960px;
+            margin: 0 auto 48px;
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 32px;
+            animation: fadeUp 0.4s ease both;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(14px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .product-img-wrap {
+            border-radius: var(--radius);
+            overflow: hidden;
+            aspect-ratio: 1;
+            background: var(--panel);
+            border: 1px solid var(--border);
+        }
+
+        .product-img-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s;
+        }
+
+        .product-img-wrap img:hover {
+            transform: scale(1.04);
+        }
+
+        .product-info {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .badge {
+            display: inline-block;
+            background: var(--accent);
+            color: #000;
+            font-size: 0.68rem;
+            font-weight: 500;
+            padding: 3px 10px;
+            border-radius: 20px;
+            margin-bottom: 4px;
+            font-family: 'Syne', sans-serif;
+        }
+
+        .product-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 800;
+            line-height: 1.15;
+            letter-spacing: -0.5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+        }
+
+        tr {
+            border-bottom: 1px solid var(--border);
+        }
+
+        tr:last-child {
+            border-bottom: none;
+        }
+
+        th {
+            text-align: left;
+            color: var(--muted);
+            padding: 9px 0;
+            font-weight: 400;
+            width: 42%;
+            text-transform: uppercase;
+            font-size: 0.72rem;
+            letter-spacing: 0.06em;
+        }
+
+        td {
+            padding: 9px 0;
+            color: var(--text);
+        }
+
+        .actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-family: 'DM Mono', monospace;
+            font-size: 0.82rem;
+            cursor: pointer;
+            text-decoration: none;
+            border: none;
+            transition: all 0.18s;
+            font-weight: 500;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #000;
+        }
+
+        .btn-primary:hover {
+            background: #ffd65c;
+            transform: translateY(-1px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .search-bar {
+            display: flex;
+            gap: 10px;
+        }
+
+        .search-bar input {
+            flex: 1;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 14px;
+            color: var(--text);
+            font-family: 'DM Mono', monospace;
+            font-size: 0.82rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .search-bar input:focus {
+            border-color: var(--accent);
+        }
+
+        .search-bar input::placeholder {
+            color: var(--muted);
+        }
+
+        /* ── Divider ── */
+        .section-title {
+            max-width: 960px;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .section-title h2 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text);
+            white-space: nowrap;
+        }
+
+        .section-title .line {
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .section-title .sub {
+            font-size: 0.72rem;
+            color: var(--muted);
+            white-space: nowrap;
+        }
+
+        /* ── Variations grid ── */
+        .var-grid {
+            max-width: 960px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .var-card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            cursor: pointer;
+            transition: border-color 0.18s, box-shadow 0.18s;
+            animation: fadeUp 0.4s ease both;
+        }
+
+        .var-card:nth-child(1) {
+            animation-delay: 0.05s;
+        }
+
+        .var-card:nth-child(2) {
+            animation-delay: 0.10s;
+        }
+
+        .var-card:nth-child(3) {
+            animation-delay: 0.15s;
+        }
+
+        .var-card:nth-child(4) {
+            animation-delay: 0.20s;
+        }
+
+        .var-card:nth-child(5) {
+            animation-delay: 0.25s;
+        }
+
+        .var-card:nth-child(6) {
+            animation-delay: 0.30s;
+        }
+
+        .var-card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 1px var(--accent);
+        }
+
+        .var-card.selected {
+            border-color: var(--green);
+            box-shadow: 0 0 0 1px var(--green);
+        }
+
+        .var-img {
+            background: #fff;
+            padding: 16px 12px 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 90px;
+        }
+
+        .var-img img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .var-body {
+            padding: 10px 12px 12px;
+        }
+
+        .var-label {
+            font-family: 'Syne', sans-serif;
+            font-size: 0.82rem;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .var-hint {
+            font-size: 0.68rem;
+            color: var(--muted);
+            margin-bottom: 10px;
+        }
+
+        .var-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .mod-pill {
+            font-size: 0.65rem;
+            background: rgba(245, 200, 66, 0.1);
+            border: 1px solid rgba(245, 200, 66, 0.25);
+            color: var(--accent);
+            border-radius: 20px;
+            padding: 2px 8px;
+        }
+
+        .dl-link {
+            font-size: 0.65rem;
+            color: var(--muted);
+            text-decoration: none;
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            padding: 3px 8px;
+            transition: all 0.15s;
+        }
+
+        .dl-link:hover {
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        @media (max-width: 700px) {
+            .product-card {
+                grid-template-columns: 1fr;
+            }
+
+            .var-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 440px) {
+            .var-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>🏷 Product Lookup</h1>
+        <span>GET / · GET /barcode</span>
+    </header>
+
+    <!-- ── Product info ── -->
+    <div class="product-card">
+        {% if img_url %}
+        <div class="product-img-wrap">
+            <img src="{{ img_url }}" alt="product" onerror="this.style.display='none'">
+        </div>
+        {% endif %}
+        <div class="product-info">
+            <div>
+                <div class="badge">Random pick</div>
+                <h2 class="product-title">{{ title_val }}</h2>
+            </div>
+            <table>
+                {% for key, val in detail_fields %}
+                <tr>
+                    <th>{{ key }}</th>
+                    <td>{{ val }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+            <div class="actions">
+                <a class="btn btn-primary" href="/?refresh=1">⟳ Refresh</a>
+                <a class="btn btn-outline" href="/barcode?barcode={{ barcode_val }}" target="_blank">JSON ↗</a>
+            </div>
+            <div>
+                <p
+                    style="font-size:0.72rem;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em">
+                    Search by barcode</p>
+                <div class="search-bar">
+                    <input id="bc-input" type="text" placeholder="e.g. {{ barcode_val }}"
+                        onkeydown="if(event.key==='Enter')lookup()">
+                    <button class="btn btn-outline" onclick="lookup()">Go</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Barcode variations ── -->
+    <div class="section-title">
+        <h2>Barcode Variations</h2>
+        <div class="line"></div>
+        <span class="sub">{{ barcode_val }} · click to select, ↓ to download</span>
+    </div>
+
+    <div class="var-grid">
+        {% for v in variations %}
+        <div class="var-card" id="card-{{ v.module }}" onclick="selectCard({{ v.module }})">
+            <div class="var-img">
+                <img src="/barcode-image?barcode={{ barcode_val }}&module={{ v.module }}" alt="{{ v.label }}"
+                    loading="lazy">
+            </div>
+            <div class="var-body">
+                <div class="var-label">{{ v.label }}</div>
+                <div class="var-hint">{{ v.hint }}</div>
+                <div class="var-footer">
+                    <span class="mod-pill">{{ v.module }}px</span>
+                    <a class="dl-link" href="/barcode-image?barcode={{ barcode_val }}&module={{ v.module }}"
+                        download="barcode_{{ barcode_val }}_m{{ v.module }}.png" onclick="event.stopPropagation()">↓
+                        PNG</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <script>
+        function lookup() {
+            const v = document.getElementById('bc-input').value.trim();
+            if (v) window.location.href = '/barcode?barcode=' + encodeURIComponent(v);
+        }
+        function selectCard(m) {
+            document.querySelectorAll('.var-card').forEach(c => c.classList.remove('selected'));
+            document.getElementById('card-' + m).classList.add('selected');
+        }
+    </script>
+</body>
+
+</html>

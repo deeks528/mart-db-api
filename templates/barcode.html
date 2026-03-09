@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>{{ branch }} · {{ barcode_val }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #0d0d0f;
+            --panel: #141417;
+            --border: #2a2a30;
+            --accent: #f5c842;
+            --accent2: #ff6b35;
+            --text: #e8e8ec;
+            --muted: #6b6b78;
+            --radius: 12px;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'DM Mono', monospace;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        /* ── Header ── */
+        header {
+            max-width: 860px;
+            margin: 0 auto 48px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 20px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        header h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: var(--accent);
+        }
+
+        /* breadcrumb */
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.72rem;
+            color: var(--muted);
+        }
+
+        .breadcrumb a {
+            color: var(--muted);
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            color: var(--accent);
+        }
+
+        .breadcrumb .sep {
+            color: var(--border);
+        }
+
+        .breadcrumb .current {
+            color: var(--accent2);
+        }
+
+        .branch-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 0.72rem;
+            color: var(--muted);
+        }
+
+        .branch-pill .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent2);
+            display: inline-block;
+        }
+
+        /* ── Card ── */
+        .card {
+            max-width: 860px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 32px;
+            animation: fadeUp 0.45s ease both;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(18px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .left {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .barcode-wrap {
+            background: white;
+            border-radius: var(--radius);
+            padding: 20px 16px 14px;
+            text-align: center;
+            box-shadow: 0 0 0 1px var(--border), 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        .barcode-wrap img {
+            width: 100%;
+            display: block;
+        }
+
+        .product-img-wrap {
+            border-radius: var(--radius);
+            overflow: hidden;
+            aspect-ratio: 1;
+            background: var(--panel);
+            border: 1px solid var(--border);
+        }
+
+        .product-img-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .product-img-wrap img:hover {
+            transform: scale(1.04);
+        }
+
+        .right {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .product-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.9rem;
+            font-weight: 800;
+            line-height: 1.15;
+            letter-spacing: -0.5px;
+            color: var(--text);
+        }
+
+        .badge {
+            display: inline-block;
+            background: var(--accent2);
+            color: #fff;
+            font-size: 0.68rem;
+            font-weight: 500;
+            padding: 3px 10px;
+            border-radius: 20px;
+            letter-spacing: 0.04em;
+            margin-bottom: 4px;
+            font-family: 'Syne', sans-serif;
+            text-transform: uppercase;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+        }
+
+        tr {
+            border-bottom: 1px solid var(--border);
+        }
+
+        tr:last-child {
+            border-bottom: none;
+        }
+
+        th {
+            text-align: left;
+            color: var(--muted);
+            padding: 9px 0;
+            font-weight: 400;
+            width: 42%;
+            vertical-align: top;
+            text-transform: uppercase;
+            font-size: 0.72rem;
+            letter-spacing: 0.06em;
+        }
+
+        td {
+            padding: 9px 0;
+            color: var(--text);
+            vertical-align: top;
+        }
+
+        /* ── JSON block ── */
+        .json-block {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+
+        .json-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.72rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .json-header:hover {
+            color: var(--accent);
+        }
+
+        .json-header .chevron {
+            transition: transform 0.2s;
+        }
+
+        .json-header.open .chevron {
+            transform: rotate(180deg);
+        }
+
+        .json-body {
+            display: none;
+            padding: 16px;
+            overflow-x: auto;
+        }
+
+        .json-body.visible {
+            display: block;
+        }
+
+        pre {
+            font-size: 0.78rem;
+            line-height: 1.6;
+            color: var(--text);
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .json-key {
+            color: #79b8ff;
+        }
+
+        .json-str {
+            color: #9ecbff;
+        }
+
+        .json-num {
+            color: #f8c555;
+        }
+
+        /* ── Actions ── */
+        .actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-family: 'DM Mono', monospace;
+            font-size: 0.82rem;
+            cursor: pointer;
+            text-decoration: none;
+            border: none;
+            transition: all 0.18s ease;
+            font-weight: 500;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #000;
+        }
+
+        .btn-primary:hover {
+            background: #ffd65c;
+            transform: translateY(-1px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* ── Endpoint pill ── */
+        .endpoint-tag {
+            font-size: 0.7rem;
+            color: var(--muted);
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 6px 12px;
+            letter-spacing: 0.03em;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .method {
+            color: var(--accent2);
+            font-weight: 500;
+        }
+
+        .path-branch {
+            color: var(--accent);
+        }
+
+        @media (max-width: 640px) {
+            .card {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="header-left">
+            <h1>🏷 Product Lookup</h1>
+            <nav class="breadcrumb">
+                <a href="/">home</a>
+                <span class="sep">/</span>
+                <span class="current">{{ branch }}</span>
+                <span class="sep">/</span>
+                <span>barcode</span>
+            </nav>
+        </div>
+        <div class="branch-pill">
+            <span class="dot"></span>
+            {{ branch }}
+        </div>
+    </header>
+
+    <div class="card">
+        <div class="left">
+            <div class="barcode-wrap">
+                <img src="/barcode-image?barcode={{ barcode_val }}" alt="Barcode {{ barcode_val }}">
+            </div>
+            {% if img_url %}
+            <div class="product-img-wrap">
+                <img src="{{ img_url }}" alt="Product image" onerror="this.style.display='none'">
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="right">
+            <div>
+                <div class="badge">{{ branch }}</div>
+                <h2 class="product-title">{{ title_val }}</h2>
+            </div>
+
+            <table>
+                {% for key, val in detail_fields %}
+                <tr>
+                    <th>{{ key }}</th>
+                    <td>{{ val }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+
+            <div class="actions">
+                <a class="btn btn-primary" href="/">← Home</a>
+                <a class="btn btn-outline" href="/barcode?barcode={{ barcode_val }}" target="_blank">Raw JSON ↗</a>
+            </div>
+
+            <!-- Collapsible JSON viewer -->
+            <div class="json-block">
+                <div class="json-header" id="json-toggle" onclick="toggleJson()">
+                    <span>Record payload</span>
+                    <span class="chevron">▾</span>
+                </div>
+                <div class="json-body" id="json-body">
+                    <pre id="json-pre"></pre>
+                </div>
+            </div>
+
+            <div class="endpoint-tag">
+                <span class="method">GET</span>
+                <span>/<span class="path-branch">{{ branch }}</span>/barcode?barcode=<strong>{{ barcode_val
+                        }}</strong></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Pretty-print JSON with syntax highlighting
+        const raw = {{ raw | tojson }};
+
+        function highlight(json) {
+            return json
+                .replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(?=\s*:))/g,
+                    '<span class="json-key">$1</span>')
+                .replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*")/g,
+                    '<span class="json-str">$1</span>')
+                .replace(/\b(-?\d+\.?\d*)\b/g,
+                    '<span class="json-num">$1</span>');
+        }
+
+        document.getElementById('json-pre').innerHTML =
+            highlight(JSON.stringify(raw, null, 2));
+
+        function toggleJson() {
+            const toggle = document.getElementById('json-toggle');
+            const body = document.getElementById('json-body');
+            toggle.classList.toggle('open');
+            body.classList.toggle('visible');
+        }
+    </script>
+</body>
+
+</html>
